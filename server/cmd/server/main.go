@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"github.com/RonitSamaddar/BookYu/internal/server"
 )
 
 func main() {
-	fmt.Println("Hello World! This is BookYu!!!")
+	server.Start()
 }
