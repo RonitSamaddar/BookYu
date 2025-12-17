@@ -15,5 +15,5 @@ func New(config types.Config) *Source {
 
 func (s *Source) GetBook(name string) (types.Book, error) {
 	query := gbook.ProcessNameQuery(name)
-	return gbook.GetVolume(query, s.config.GoogleBooksApiKey, 1)
+	return gbook.GetBook(query, s.config.GoogleBooksApiKey, 1)
 }

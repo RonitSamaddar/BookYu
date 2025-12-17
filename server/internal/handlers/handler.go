@@ -1,9 +1,11 @@
 package handlers
 
 import (
-	"fmt"
+	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/RonitSamaddar/BookYu/internal/bookManager"
 )
 
 func New(source Source) *Handler {
@@ -26,5 +28,16 @@ func (h *Handler) bookSearchHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error getting book: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	fmt.Fprintf(w, "Book: %+v", book)
+
+	log.Printf("Book: %+v", book)
+
+	bookResponse := bookManager.GetBookResponse(book)
+
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	err = enc.Encode(bookResponse)
+	if err != nil {
+		log.Printf("Error marshaling book: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }

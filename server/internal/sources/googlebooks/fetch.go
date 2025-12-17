@@ -19,7 +19,7 @@ func ProcessNameQuery(name string) string {
 	return query
 }
 
-func GetVolume(query, apiKey string, limit int) (types.Book, error) {
+func GetBook(query, apiKey string, limit int) (types.Book, error) {
 	url := fmt.Sprintf("%s?key=%s&%s=%s&%s=%d", consts.GoogleBooksBaseURL, apiKey, consts.GoogleBooksQueryField, query, consts.GoogleBooksLimitField, limit)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -34,9 +34,16 @@ func GetVolume(query, apiKey string, limit int) (types.Book, error) {
 	log.Printf("bodyBytes: %s", string(bodyBytes))
 
 	var response GoogleBooksGetVolumeResponse
-	json.Unmarshal(bodyBytes, &response)
+	err = json.Unmarshal(bodyBytes, &response)
+	if err != nil {
+		return types.Book{}, err
+	}
 
 	log.Printf("response: %+v", response)
 
-	return response.Items[0].VolumeInfo, nil
+	book, err := processVolumeInfo(response.Items[0].VolumeInfo)
+	if err != nil {
+		return types.Book{}, err
+	}
+	return book, nil
 }
