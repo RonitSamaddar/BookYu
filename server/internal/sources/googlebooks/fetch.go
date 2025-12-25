@@ -16,11 +16,13 @@ func ProcessNameQuery(name string) string {
 	trimmedName := strings.TrimSpace(strings.ToLower(name))
 	nameTokens := strings.Split(trimmedName, " ")
 	query := strings.Join(nameTokens, "+")
+	query = fmt.Sprintf("intitle:%s", query)
 	return query
 }
 
-func GetBook(query, apiKey string, limit int) (types.Book, error) {
-	url := fmt.Sprintf("%s?key=%s&%s=%s&%s=%d", consts.GoogleBooksBaseURL, apiKey, consts.GoogleBooksQueryField, query, consts.GoogleBooksLimitField, limit)
+func GetBook(query, language, apiKey string, limit int) (types.Book, error) {
+	url := formURL(query, language, apiKey, limit)
+	log.Printf("url: %s", url)
 	resp, err := http.Get(url)
 	if err != nil {
 		return types.Book{}, err
@@ -41,9 +43,24 @@ func GetBook(query, apiKey string, limit int) (types.Book, error) {
 
 	log.Printf("response: %+v", response)
 
-	book, err := processVolumeInfo(response.Items[0].VolumeInfo)
+	filteredItems := filterVolumes(response.Items, language)
+	if len(filteredItems) == 0 {
+		return types.Book{}, fmt.Errorf("no volumes found for query %s, language %s", query, language)
+	}
+
+	book, err := processVolumeInfo(filteredItems[0].VolumeInfo)
 	if err != nil {
 		return types.Book{}, err
 	}
 	return book, nil
+}
+
+func formURL(query, language, apiKey string, limit int) string {
+	url := consts.GoogleBooksBaseURL
+	url += "?" + consts.GoogleBooksApiKeyField + "=" + apiKey
+	url += "&" + consts.GoogleBooksQueryField + "=" + query
+	url += "&" + consts.GoogleBooksLimitField + "=" + fmt.Sprintf("%d", limit)
+	url += "&" + consts.GoogleBooksLangField + "=" + language
+	url += "&" + consts.GoogleBooksTypeField + "=" + consts.GoogleBooksTypeBooks
+	return url
 }

@@ -13,7 +13,7 @@ func New(config types.Config) *Source {
 	}
 }
 
-func (s *Source) GetBook(name string) (types.Book, error) {
+func (s *Source) GetBook(name string, language string) (types.Book, error) {
 	query := gbook.ProcessNameQuery(name)
-	return gbook.GetBook(query, s.config.GoogleBooksApiKey, 1)
+	return gbook.GetBook(query, language, s.config.GoogleBooksApiKey, 1)
 }

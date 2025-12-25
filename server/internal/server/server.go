@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/RonitSamaddar/BookYu/internal/config"
+	"github.com/RonitSamaddar/BookYu/internal/consts"
 	"github.com/RonitSamaddar/BookYu/internal/handlers"
 	"github.com/RonitSamaddar/BookYu/internal/sources"
 )
@@ -25,10 +26,8 @@ func Start() error {
 	}
 
 	log.Printf("Starting server")
-
-	port := "8080"
-	log.Printf("Listening on port %s", port)
-	err = http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
+	log.Printf("Listening on port %s", consts.ServerPort)
+	err = http.ListenAndServe(fmt.Sprintf(":%s", consts.ServerPort), nil)
 	if err != nil {
 		return err
 	}

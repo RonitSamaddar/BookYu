@@ -9,5 +9,5 @@ type Handler struct {
 }
 
 type Source interface {
-	GetBook(name string) (types.Book, error)
+	GetBook(name, language string) (types.Book, error)
 }
